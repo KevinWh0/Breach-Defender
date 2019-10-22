@@ -1,16 +1,3 @@
-PImage photo;
-
-
-LaunchItem s = new LaunchItem(100,200,400,200,100);
-
-
-void setup(){
-  size(400,400);
-  photo = loadImage("FootPrints.png");
-  s.setImg(photo,16,16);
-  s.setRotSpeed(0.1);
-}
-
 class LaunchItem{
   int StartX;
   int StartY;
@@ -29,6 +16,9 @@ class LaunchItem{
   
   float rotSpeed = 0;
   float rot = 0;
+
+
+  boolean firstTimeSetImg = true;
 
   LaunchItem(int SStartX, int SStartY, int SStopX,int SStopY, int STime){
     StartX = SStartX;
@@ -71,7 +61,6 @@ class LaunchItem{
     }
     
     
-    print(distX/100+"\n");
     if(!(Y > StopY)){
       VelocityY +=distX/(10000); //10,000 works for a dist of 200
     }else{
@@ -103,24 +92,20 @@ class LaunchItem{
   }
   boolean isDone(){
     
-    if(VelocityY == 0 && abs(StartX-StopX) < 3){
+    if(VelocityY == 0){
       return true;
     }
     
     return false;
   }
   
-  
-}
-
-
-void draw(){
-  clear();
-  background(255);
-  image(photo,10,10);
-  s.runAll();
-
-  
-
+  boolean getDone(){
+    
+   return firstTimeSetImg; 
+  }
+  void setDone(boolean input){
+    
+   firstTimeSetImg = input; 
+  }
   
 }

@@ -1,15 +1,6 @@
 import processing.sound.*;
 import processing.net.*;
-//Debug graph import
-import grafica.*;
 
-
-GPlot fps;
-
-
-
-ParticleSystem ps;
-ParticleSystem FootSteps;
 
 
 
@@ -35,31 +26,14 @@ int Player2Y;
  **************************************************************************************/
 
 SoundFile MainTheme;
-SoundFile CreitsTheme;
 
-//SFX
-SoundFile Shoot;
-SoundFile ClipFence;
-SoundFile Explosion;
+
 
 PImage player;
-
-//Footprint
-PImage Footprints;
-//icons and stuff
 PImage icons;
 PImage tilesB;
 PImage items;
 PImage TransportV;
-PImage NPCS;
-PImage GunCrosshair;
-PImage Heart;
-
-
-
-//NPCS
-PImage GuardLegUp1;
-PImage GuardLegUp2;
 
 
 //TILES
@@ -74,27 +48,15 @@ PImage Tar;
 PImage TrafficCone;
 PImage Wall;
 PImage WallRot;
-PImage Easel;
 
-//Credits Paralax Things
-PImage b1;
-PImage b2;
-PImage b3;
-PImage b4;
-PImage b5;
-boolean loadingCreditsFiles = true;
 
 
 //ITEMS
 PImage WireCutters;
-PImage Pistol;
-PImage Dynamite;
 
-
-Boolean DevTools = false;
-Boolean DevVis = false;
+Boolean DevTools = true;
+Boolean DevVis = true;
 Boolean isBuilding = false;
-Boolean openGraph = false;
 
 //Trucks cars ect...
 PImage STruck;
@@ -130,13 +92,12 @@ int PlayerOffsetY = 0;
 int SpawnX = 0;
 int SpawnY = 0;
 
-int Coins = 500;
+int Coins = 100;
 
 boolean showPlayer = true;
 boolean OnV = false;
 int PlayerWidth = 50;
 int PlayerHeight = 50;
-int MaxPlayerSpeed = 8;
 int PlayerSpeed = 1;
 int xp = 10;
 int MaxHealth = 20;
@@ -147,16 +108,8 @@ boolean HealTick = false;
 boolean walking = false;
 String facing = "Right";
 String fceing = "Right";
-String Team;
 
-
-int WeaponDmg[] = {20, 20, 20};
-
-
-String Inv[] = {"", "", "", "", "", ""};
-
-//String Inv[] = {"Wire-Cutters", "Dev Wand", "Speed Wand", "", "", ""};
-float Cooldown = 0;
+String Inv[] = {"Wire-Cutters", "Dev Wand", "Speed Wand", "", "", ""};
 int SelectedItem;
 
 
@@ -164,7 +117,7 @@ int SelectedItem;
 int MWidth = 90;
 int MHeight = 90;
 
-int BlockSize = 60;
+int BlockSize = 50;
 
 
 
@@ -173,12 +126,11 @@ boolean hitSomthing = false;
 
 
 //Objects on map
-Guard G1 = new Guard(64, 69, 50); 
+Guard G1 = new Guard(64, 69); 
 Vehicle Van1 = new Vehicle(1, 1, "VAN", 5); 
 
-String[] sellItems = {"Wire-Cutters", "50", "Pistol", "200", "Dynamite", "500"};  ///text(Say(Text[Clicks]+" //"+Clicks, false), OnScreenGX-50, OnScreenGY-60, PlayerWidth+100, PlayerHeight+10);
-String[] NPCTalk = {"If we Naruto run we can move faster than their bullets.", "Want somthing, if so I got you covered.", "Want to buy some Wire Cutters for 50$", "Want to buy a Pistol for 200$", "Want to buy some Dynamite for 500$"};
-NPC NPC1 = new NPC(50, 50, "Bill", sellItems, NPCTalk); 
+String[] sellItems = {"Wire-Cutters", "500"};
+NPC NPC1 = new NPC(50, 50, "Bill", sellItems); 
 
 
 //BUILD MODE (DEV)
@@ -188,8 +140,7 @@ color Placing = color(1, 0, 0, 0);
 
 
 
-//ScreenShake
-int ShakeLimits = 0;
+
 
 
 
@@ -207,8 +158,7 @@ int blockHardnesses[] = {1000, 1000, 1000, 15, 0, 0};
 //Settings stuff
 int SettingsTitleOffset;
 
-//location on where the player is on the menu if the player is on the menu
-String DispMenu = "MainMenu";
+
 
 
 
@@ -224,43 +174,21 @@ PImage MAP;
 
 
 void settings() {
-
   noSmooth();  
   size(800, 800);
 }
 void setup() {
-  frameRate(maxFrameRate);
-  surface.setResizable(true);
-  fps = new GPlot(this);
-  fps.setPos(0, 0);
-  fps.setDim(200, 200);
-  fps.setPointColor(color(0, 0, 0, 255));
-  fps.setPointSize(2);
-
   player = loadImage("Player.png");
   icons = loadImage("Icons.png");
   tilesB = loadImage("TilesB.png");
   items = loadImage("Items.png");
   TransportV = loadImage("Transport.png");
-  NPCS = loadImage("NPCS.png");
-
-
-
 
   //LOAD SOUND
   MainTheme = new SoundFile(this, "theme_main.mp3");
 
 
-  //SFX
-  Shoot = new SoundFile(this, "/Sounds/Shoot.mp3");
-  ClipFence = new SoundFile(this, "/sounds/ClipFence.mp3");
-  Explosion = new SoundFile(this, "/sounds/Explosion.mp3");
-
-
-  //NPCS
-  GuardLegUp1 = loadImg(NPCS, 0, 0, 16, 16, false);
-  GuardLegUp2 = loadImg(NPCS, 16, 0, 16, 16, false);
-
+  frameRate(maxFrameRate);
   //TILES
   Grass = loadImg(tilesB, 0, 0, 16, 16, false);
   Dirt = loadImg(tilesB, 16, 0, 16, 16, false);
@@ -273,18 +201,9 @@ void setup() {
   TrafficCone = loadImg(tilesB, 32, 32, 16, 16, false);
   Wall = loadImg(tilesB, 16, 16, 16, 16, false);
   WallRot = loadImg(tilesB, 16, 16, 16, 16, true);
-  Easel = loadImg(tilesB, 32, 48, 16, 16, false);
-
   //ITEMS
   WireCutters = loadImg(items, 0, 0, 16, 16, false);
-  Pistol = loadImg(items, 16, 0, 16, 16, false);
-  Dynamite = loadImg(items, 32, 0, 16, 16, false);
-  //Icons
-  GunCrosshair = loadImg(icons, 0, 16, 16, 16, false);
-  Heart = loadImg(icons, 0, 0, 16, 16, false);
-  Footprints = loadImage("FootPrints.png");
 
-  //FootPrints.png
 
   //Trucks Cars ect...
   STruck = loadImg(TransportV, 0, 0, 16, 16, false);
@@ -297,15 +216,7 @@ void setup() {
 
   SettingsTitleOffset = -width;
 
-
-  ps = new ParticleSystem(Tar, -10, -10, 0, 0, 50, 100, false);
-  FootSteps = new ParticleSystem(loadImg(Footprints, 0, 0, 16, 16, false), -10, -10, 0, 0, 50, 255, true);
-
-
-
-  if (DevTools) {
-    MainTheme.amp(0);
-  }
+  s = new Server(this, 12345, "127.0.0.1");  // Start a simple server on a port
 }
 
 
@@ -320,7 +231,6 @@ class Vehicle {
   float Vel;
   float playerCVel;
   boolean controlled = false;
-  boolean shouldDriveOnOwn = true; //set to false if the player has already hijacked the vicle so it does not drive away
 
   boolean placeBackNeeded = false;
   int placeBack[][] ={{0, 0, 0, 0}, 
@@ -345,19 +255,13 @@ class Vehicle {
     }
   }
   void runAll() {
-    if (controlled == false && shouldDriveOnOwn) {
+    if (controlled == false) {
       this.drive();
 
       this.RunoverHumans();
     }
-    OnScreenVX = VX+round(PlayerX);
-    OnScreenVY = VY+round(PlayerY);
-    if ((OnScreenVX > 0 && OnScreenVX < width && OnScreenVY > 0 && OnScreenVY < height)) {
-
-      this.displayV();
-      this.hijackVeicle();
-    }
-    ps.run();
+    this.displayV();
+    this.hijackVeicle();
   }
   void Speedometer() {
     fill(200, 200, 200, 100);
@@ -374,13 +278,6 @@ class Vehicle {
   }
   void hijackVeicle() {
 
-    if (dead) {
-      showPlayer = true;
-      controlled = false;
-      PlayerSpeed = MaxPlayerSpeed;
-      Health = 20;
-      OnV = false;
-    }
 
     if (inArea(width/2, height/2, OnScreenVX-((5/16)*VanSize), OnScreenVY-((5/16)*VanSize), VanSize-((5/16)*VanSize), VanSize-((5/16)*VanSize))) { 
 
@@ -390,7 +287,6 @@ class Vehicle {
         controlled = true;
         mouseP = false;
         OnV = true;
-        shouldDriveOnOwn = false;
       } else {
         fill(25, 25, 25, 100);
       }
@@ -420,8 +316,8 @@ class Vehicle {
         }
       } else {
 
-        //PlayerSpeed = 0; 
-        //playerCVel = 0;
+        PlayerSpeed = 0; 
+        playerCVel = 0;
       }
       if (IsSolid(VX, VY) && blockHardnesses[3] < playerCVel) {
         playerCVel = 5;
@@ -440,7 +336,7 @@ class Vehicle {
         fill(0, 0, 0, 150);
         showPlayer = true;
         controlled = false;
-        PlayerSpeed = MaxPlayerSpeed;
+        PlayerSpeed = 1;
         Health = 20;
         OnV = false;
       } else {
@@ -495,20 +391,14 @@ class Vehicle {
   void displayV() {
     OnScreenVX = VX+round(PlayerX);
     OnScreenVY = VY+round(PlayerY);
-    ps.addParticle();
-
     if (Heading.equals("Down")) {
       image(STruck, OnScreenVX, OnScreenVY, VanSize, VanSize);
-      ps.SetPos(VX+20, VY);
     } else if (Heading.equals("Up")) {
       image(flipImg(STruck, "Y"), OnScreenVX, OnScreenVY, VanSize, VanSize);
-      ps.SetPos(VX+20, VY+VanSize);
     } else if (Heading.equals("Right")) {
       image(flipImg(STruckRot1, "Y"), OnScreenVX, OnScreenVY, VanSize, VanSize);
-      ps.SetPos(VX, VY+VanSize-20);
     } else if (Heading.equals("Left")) {
       image(flipImg(flipImg(STruckRot1, "X"), "Y"), OnScreenVX, OnScreenVY, VanSize, VanSize);
-      ps.SetPos(VX+VanSize, VY+VanSize-20);
     }
     fill(255);
     //text(Vel+"", OnScreenVX, OnScreenVY, VanSize, VanSize);
@@ -549,10 +439,6 @@ class Vehicle {
     }
   }
   void drive() {
-
-
-
-
     if (Vel < topSpeed) {
       //Vel = topSpeed;
       Vel+=0.1;
@@ -593,8 +479,6 @@ class Guard {
   int SaveGXTP;
   int SaveGYTP;
 
-  int Health;
-  int MaxHealth;
 
   int OnScreenGX;
   int OnScreenGY;
@@ -602,63 +486,18 @@ class Guard {
   float DistFromP;
   float DistFromObjective;
   String Heading = "NULL";
-
-  int RespawnX;
-  int RespawnY;
-  Guard(int SpawnX, int SpawnY, int SpawnHealth) {
+  Guard(int SpawnX, int SpawnY) {
     GuardX = SpawnX*BlockSize;
     GuardY = SpawnY*BlockSize;
-    Health = SpawnHealth;
-    MaxHealth = SpawnHealth;
-
-
-    RespawnX = SpawnX;
-    RespawnY = SpawnY;
   }
   void go() {
-    OnScreenGX = GuardX+round(PlayerX);
-    OnScreenGY = GuardY+round(PlayerY);
-    if ((OnScreenGX > 0 && OnScreenGX < width && OnScreenGY > 0 && OnScreenGY < height) && Health > 0) {
-
-      this.displayGard();
-    }
-
-    if (dist(PlayerOffsetX, PlayerOffsetY, OnScreenGX, OnScreenGY) < width+height && Health > 0) {
-
-      this.moveGard();
-    }
-    if (this.Health < 1) {
-      SpawnX = this.RespawnX;
-      SpawnY = this.RespawnY;
-      Health = this.MaxHealth;
-    }
+    this.moveGard();
+    this.displayGard();
   }
   void displayGard() {
     OnScreenGX = GuardX+round(PlayerX);
     OnScreenGY = GuardY+round(PlayerY);
-    //image(loadImg(player, 0, 30, 16, 16, false), OnScreenGX, OnScreenGY, PlayerWidth, PlayerHeight);
-
-
-    //Get shot
-
-
-    fill(255, 0, 0);
-    rect(OnScreenGX, OnScreenGY-10, MaxHealth, 5);
-    fill(0, 255, 0);
-    rect(OnScreenGX, OnScreenGY-10, Health, 5);
-    if (Health < 0) {
-    } else if (mouseLifted() && inArea(mouseX, mouseY, OnScreenGX, OnScreenGY, PlayerWidth, PlayerHeight) && Inv[SelectedItem].equals("Pistol")) {
-
-      Health -=WeaponDmg[0];
-    }
-
-
-
-    if (second() % 2 == 0) {
-      image(GuardLegUp1, OnScreenGX, OnScreenGY, PlayerWidth, PlayerHeight);
-    } else {
-      image(GuardLegUp2, OnScreenGX, OnScreenGY, PlayerWidth, PlayerHeight);
-    }
+    image(loadImg(player, 0, 30, 16, 16, false), OnScreenGX, OnScreenGY, PlayerWidth, PlayerHeight);
     //fill(255);
     //text(DistFromP, OnScreenGX, OnScreenGY);
   }
@@ -770,23 +609,18 @@ class NPC {
   boolean speaking = false;
   boolean selling = true;
   String[] SellItems;
-  String[] Text;
-  int Buyid = 0;
 
-  NPC(int NPCSpawnX, int NPCSpawnY, String SpawnName, String[] Selling, String[] SpawnText) {
+  NPC(int NPCSpawnX, int NPCSpawnY, String SpawnName, String[] Selling) {
     this.X = NPCSpawnX;
     this.Y = NPCSpawnY;
     this.Name = SpawnName;
     SellItems = Selling.clone();
-    Text = SpawnText;
   }
   void RunAll() {
     OnScreenGX = this.X+round(PlayerX);
     OnScreenGY = this.Y+round(PlayerY);
-    if (OnScreenGX > 0 && OnScreenGX < width && OnScreenGY > 0 && OnScreenGY < height) {
-      image(loadImg(player, 0, 30, 16, 16, false), OnScreenGX, OnScreenGY, PlayerWidth, PlayerHeight);
-      this.SayStuff();
-    }
+    image(loadImg(player, 0, 30, 16, 16, false), OnScreenGX, OnScreenGY, PlayerWidth, PlayerHeight);
+    this.SayStuff();
   }
 
   void SayStuff() {
@@ -797,15 +631,6 @@ class NPC {
       if (mouseLifted() && inArea(mouseX, mouseY, (width/2)-60, height-160, 120, 50) && dead == false) {
         fill(0, 0, 0, 150);
         speaking = true;
-        try {
-          if (Text[Clicks].contains("buy")) {
-            Buyid+=2;
-          }
-        }
-        catch(Exception e) {
-        }
-
-
         Clicks++;
       } else {
         fill(25, 25, 25, 100);
@@ -816,32 +641,20 @@ class NPC {
       text("Speak!", (width/2)-60, height-160, 120, 50);
     } else {
       speaking = false;
-      Clicks = -1;
-      Buyid = 0;
+      Clicks = 0;
     }
     fill(255);
     textSize(11);
 
     if (speaking) {
-      try {
-
-        text(Say(Text[Clicks]+" //"+Clicks, false), OnScreenGX-50, OnScreenGY-60, PlayerWidth+100, PlayerHeight+10);
-
-        if (Text[Clicks].contains("buy")) {
-          try {
-            shop(SellItems[Buyid], int(SellItems[Buyid+1]));
-          }
-          catch(Exception e) {
-            Buyid = 0;
-          }
-        }
-        //buy
-        //
-      }
-      catch(Exception e) {
+      if (Clicks == 0) {
+        text(Say("Looks like you could use a "+SellItems[Clicks]+". Would you like to buy one for "+SellItems[1]+"$? //"+Clicks, false), OnScreenGX-50, OnScreenGY-60, PlayerWidth+100, PlayerHeight+10);
+        shop(SellItems[Clicks], int(SellItems[1]));
+      } else if (Clicks == 1) {
+        text(Say("If we Naruto run we can move faster than their bullets. //"+Clicks, false), OnScreenGX-50, OnScreenGY-60, PlayerWidth+100, PlayerHeight+10);
+      } else {
         Clicks = 0;
       }
-
       if (Clicks > 98) {
         Clicks = 0;
       }
@@ -1022,16 +835,10 @@ PImage shadeImg(PImage file, int X, int Y, float intensity) {
       float distFromLight = dist(X, Y, i, j);
 
       ramCol = file.get(i, j);
-      int lightToAdd = 0;
-
-      if (distFromLight < intensity) {
-        lightToAdd = round(intensity - distFromLight);
-      }
-
-      color insertCol = color(red(ramCol)+lightToAdd, green(ramCol)+lightToAdd, blue(ramCol)+lightToAdd);
-
+      
+      color insertCol = color(red(ramCol),green(ramCol),blue(ramCol));
       //distFromLight
-      ramImg.pixels[ramCount] = insertCol;
+      ramImg.pixels[ramCount] = ramCol;
       ramCount++;
     }
   }
@@ -1119,7 +926,7 @@ void move() {
       if (DevTools == true) {
         PlayerSpeed = 10;
       } else {
-        PlayerSpeed = MaxPlayerSpeed;
+        PlayerSpeed = 8;
       }
     }
   } else {
@@ -1127,7 +934,6 @@ void move() {
     walking = false;
   }
 }
-
 void GenCode() {
 
   MAP.updatePixels();
@@ -1137,15 +943,8 @@ void GenCode() {
 void drawPlayer() {
   PlayerOffsetX = width/2;
   PlayerOffsetY = height/2;
-
-
-  FootSteps.run();//FootSteps
-
   if (showPlayer) {
     if (walking) {
-      FootSteps.SetPos(round(PlayerOffsetX-PlayerX)+13, round(PlayerOffsetY-PlayerY)+player.height-30);
-
-      FootSteps.addParticle();
 
       if (second() % 2 == 0) {
         if (facing.equals("Right")) {
@@ -1285,10 +1084,8 @@ void pauseButton() {
   if (mouseLifted() && inArea(mouseX, mouseY, width-30, 3, 25, 25)) {
     if (paused) {
       paused = false;
-      DispMenu = "Playing";
     } else {
       paused = true;
-      DispMenu = "paused";
     }
     SettingsTitleOffset = -width;
     settingsOpen = false;
@@ -1304,21 +1101,15 @@ void GUI() {
 
 
   //XP
-  //for (int i = 0; i < xp/5; i ++) {
-  //image(loadImg(icons, 15, 0, 16, 16, false), width-(((i*40))), 10, 50, 50);
-  //}
-  //Coins
-  fill(255);
-  image(loadImg(icons, 16, 0, 16, 16, false), 0, 40, 30, 30);
-  text(Coins, 30, 45); 
-
+  for (int i = 0; i < xp/5; i ++) {
+    image(loadImg(icons, 15, 0, 16, 16, false), width-(((i*40))), 10, 50, 50);
+  }
   for (int i = 0; i < Health/2; i ++) {
-    image(Heart, (((i*35))), 10, 30, 30);
+    image(loadImg(icons, 0, 0, 16, 16, false), (((i*35))), 10, 30, 30);
   }  
   if (Health < 0) {
     dead = true;
   }
-
 
 
   if (Health < MaxHealth+1 && second() % 2 == 0 && HealTick == false) {
@@ -1358,36 +1149,6 @@ void GUI() {
     case "Wire-Cutters":
       image(WireCutters, ((width/2)+i*60)-((Inv.length/2)*60), height-100, 50, 50);
       break;
-    case "Pistol":
-      image(Pistol, ((width/2)+i*60)-((Inv.length/2)*60), height-100, 50, 50);
-      if (Inv[SelectedItem].equals("Pistol")) {
-        image(GunCrosshair, mouseX-(GunCrosshair.width/2), mouseY-(GunCrosshair.height/2));
-        if (mouseLifted()) {
-          //Shoot.stop();        
-          Shoot.play(); 
-
-          Shake(5);
-          //KillThings
-          //TODO
-          //Kill Guards on line 580
-        }
-      }
-      break;
-    case "Dynamite":
-      image(Dynamite, ((width/2)+i*60)-((Inv.length/2)*60), height-100, 50, 50);
-      if (Inv[SelectedItem].equals("Dynamite")) {
-        if (mouseLifted()) {
-          LaunchItem tnt = new LaunchItem(round(PlayerOffsetX),round(PlayerOffsetY),mouseX,mouseY,100);
-          if(tnt.getDone()){
-            tnt.setImg(Dynamite,50,50);
-            tnt.setDone(false);
-          }
-          tnt.runAll();
-          Explosion.play();
-        }
-      }
-
-      break;
     case "Traffic Cone":
       image(TrafficCone, ((width/2)+i*60)-((Inv.length/2)*60), height-100, 50, 50);
       break;
@@ -1397,14 +1158,6 @@ void GUI() {
     }
   }
 
-  //Cooldown
-  if (Cooldown > 0) {
-    Cooldown  -=getSpeedPerFrame(2);
-    if (Cooldown < 0) {
-      Cooldown = 0;
-    }
-  }
-  text(Cooldown, mouseX, mouseY);
 
   if (dead) {
     fill(255, 0, 0, 200);
@@ -1553,15 +1306,8 @@ void loadMap(int X, int Y, int Width, int Height) {
 
                 hitSomthing = true;
               }
-            } else if (Cooldown < 1 && mousePressed && Inv[SelectedItem].equals("Wire-Cutters") && inArea(mouseX, mouseY, (i*Width)+X, (j*Height)+Y, Width, Width)) {
+            } else if (mousePressed && Inv[SelectedItem].equals("Wire-Cutters") && inArea(mouseX, mouseY, (i*Width)+X, (j*Height)+Y, Width, Width)) {
               MAP.set(i, j, color(3, 0, 0, 255));
-              if (!ClipFence.isPlaying()) {
-                ClipFence.play();
-              } else {
-                ClipFence.stop();
-                ClipFence.play();
-              }
-              Cooldown = 100;
             }
           } else if (tile == color(8, 0, 0, 255)) {
             image(Floor, (i*Width)+X, (j*Height)+Y, Width, Height);
@@ -1605,15 +1351,8 @@ void loadMap(int X, int Y, int Width, int Height) {
 
                 hitSomthing = true;
               }
-            } else if (Cooldown < 1 && mousePressed && Inv[SelectedItem].equals("Wire-Cutters") && inArea(mouseX, mouseY, (i*Width)+X, (j*Height)+Y, Width, Width)) {
+            } else if (mousePressed && Inv[SelectedItem].equals("Wire-Cutters") && inArea(mouseX, mouseY, (i*Width)+X, (j*Height)+Y, Width, Width)) {
               MAP.set(i, j, color(3, 0, 0, 255));
-              if (!ClipFence.isPlaying()) {
-                ClipFence.play();
-              } else {
-                ClipFence.stop();
-                ClipFence.play();
-              }
-              Cooldown = 100;
             }
             if (DevVis) {
               fill(255, 0, 0, 100);
@@ -1651,12 +1390,6 @@ void loadMap(int X, int Y, int Width, int Height) {
               image(Wall, (i*Width)+X, (j*Height)+Y, Width, Height);
             } else {
               image(WallRot, (i*Width)+X, (j*Height)+Y, Width, Height);
-            }
-          } else if (tile == color(9, 0, 0, 255)) {
-            image(Grass, (i*Width)+X, (j*Height)+Y, Width, Height);
-            image(Easel, (i*Width)+X, (j*Height)+Y, Width, Height);
-            if (inArea(PlayerOffsetX+PlayerWidth/2, PlayerOffsetY+PlayerHeight/2, (i*Width)+X, (j*Height)+Y, Width, Width)) {
-              pushBackPlayer();
             }
           }
           /*if (mousePressed && mouseX > (i*Width)+X && mouseY > (j*Height)+Y && mouseX < ((i*Width)+X)+Width && mouseY < ((j*Height)+Y)+Width && PressingGui == false) {
@@ -1724,202 +1457,7 @@ float getSpeedPerFrame(float speedPer60frames) {
   return speedPerFrame/frameRate;
 }
 
-// A class to describe a group of Particles
-// An ArrayList is used to manage the list of Particles 
 
-class ParticleSystem {
-  ArrayList<Particle> particles;
-  PVector origin;
-  int LifeTime;
-  PImage img;
-  float Xvel;
-  float Yvel;
-  int Fadedness;
-  boolean randomVel;
-
-  ParticleSystem(PImage LoadImg, int X, int Y, float XVel, float YVel, int Life, int StartFadedness, boolean Scatter) {
-    origin = new PVector(X, Y);
-    particles = new ArrayList<Particle>();
-    try {
-      img = LoadImg.copy();
-    }
-    catch(Exception e) {
-    }
-    LifeTime = Life;
-    Xvel = XVel;
-    Yvel = YVel;
-    Fadedness = StartFadedness;
-    randomVel = Scatter;
-  }
-
-  void SetPos(int X, int Y) {
-    origin = new PVector(X, Y);
-  }
-
-  void addParticle() {
-    particles.add((new Particle(img, origin, Xvel, Yvel, LifeTime, Fadedness, randomVel)));
-  }
-
-  void run() {
-    for (int i = particles.size()-1; i >= 0; i--) {
-      Particle p = particles.get(i);
-      p.run();
-      if (p.isDead()) {
-        particles.remove(i);
-      }
-    }
-  }
-}
-
-
-// A simple Particle class
-
-class Particle {
-  PVector position;
-  PVector velocity;
-  PVector acceleration;
-  float lifespan;
-  float OriginalLife;
-  int Fadedness;
-  PImage img;
-  Particle(PImage LoadImg, PVector l, float XVel, float YVel, int Life, int StartFadedness, boolean randomVel) {
-    acceleration = new PVector(XVel, YVel);
-    if (randomVel == false) {
-      velocity = new PVector(random(-1, 1), random(-2, 0));
-    } else {
-      velocity = new PVector(0, 0);
-    }
-    position = l.copy();
-    lifespan = Life;
-    OriginalLife = Life;
-    try {
-      img = LoadImg.copy();
-    }
-    catch(Exception e) {
-    }
-    Fadedness = StartFadedness;
-  }
-
-  void run() {
-    update();
-    display();
-  }
-
-  // Method to update position
-  void update() {
-    velocity.add(acceleration);
-    position.add(velocity);
-    lifespan -= 1.0;
-  }
-
-  // Method to display
-  void display() {
-    stroke(255, lifespan);
-    fill(255, lifespan);
-    //ellipse(position.x, position.y, 8, 8);
-    tint(255, ((lifespan/OriginalLife)*255)-(255-Fadedness));
-    try {
-      //    OnScreenVX = VX+round(PlayerX);
-      image(img, position.x+round(PlayerX), position.y+round(PlayerY));
-    }
-    catch(Exception e) {
-      //ellipse(position.x, position.y, 8, 8);
-    }
-    tint(255, 255);
-  }
-
-  // Is the particle still useful?
-  boolean isDead() {
-    if (lifespan < 0.0) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-}
-
-
-int SliderX = 0;
-float Slider(int X, int Y, int Width, int Height, int MinVal, int MaxVal) {
-
-  if (mousePressed && inArea(mouseX, mouseY, X, Y, Width-((MaxVal/9)-11)/*MaxVal-MinVal*/, Height)) {
-
-    SliderX = mouseX;
-  }
-
-  float Div = (((SliderX)-X)+MinVal)/MaxVal;
-  float Value = (((SliderX)-X)+MinVal)/(Div+1);
-  if (Value > MaxVal) {
-    Value = MaxVal;
-  } else if (Value < -1) {
-    Value = 0;
-  }
-
-  noStroke();
-  //Slider Bar
-  fill(255);
-  rect(X, Y, Width/*MaxVal-MinVal*/, Height);
-  //Slider Handle
-  fill(230);
-  rect(SliderX, Y, Width/10, Height);
-
-
-
-
-  return (Value);
-}
-void multiplayer() {
-
-  if (ServerStarted) {
-    if (Connected) {
-
-
-      if (mousePressed) {
-        pressingMouse = 1;
-      } else {
-        pressingMouse = 0;
-      }
-      if (walking || mousePressed) {
-        s.write(round((-PlayerX)+PlayerOffsetX) + " " + round((-PlayerY)+PlayerOffsetY) + " " + MouseXOnGrid + " " + MouseYOnGrid + " " + pressingMouse + "\n");
-      }
-
-      // Receive data from client
-      c = s.available();
-      if (c != null) {
-        input = c.readString(); 
-        input = input.substring(0, input.indexOf("\n"));  // Only up to the newline
-        data = int(split(input, ' '));  // Split values into an array
-
-
-        Player2X = abs(round(int(data[0])));
-        Player2Y = abs(round(int(data[1])));
-        try {
-          if (data[4] == 1) {
-            doMapInteractions(data[2], data[3]);
-          }//inArea(data[3], data[4], (i*Width)+X, (j*Height)+Y, Width, Width)
-        }
-        catch(Exception e) {
-        }
-        //print("Received: "+data[0]+"  "+data[1]+"\n");
-      }
-    } else {
-      //Server
-      try {
-        s = new Server(this, 12345, "127.0.0.1");  // Start a simple server on a port
-
-
-        Connected = true;
-      }
-      catch(Exception e) {
-        print(e);
-        //Connected = false;
-      }
-    }
-    //ellipse(Player2X + PlayerX, Player2Y + PlayerY, 100, 100);
-
-    image(loadImg(player, 0, 30, 16, 16, false), Player2X + PlayerX, Player2Y + PlayerY, PlayerWidth, PlayerHeight);
-  }
-}
 void gameSettings() {
   fill(20, 20, 20);
   rect(-1, -1, width+2, height+2);
@@ -1961,8 +1499,8 @@ void gameSettings() {
       maxFrameRate = mouseX-(50-15); //50 but to make it so you cant go under 15 frames we subtract 15
     }
   }
-  MainTheme.amp(Slider(20, 700, 300, 50, -1, 1));
-  //cursor(WireCutters);
+
+
 
 
   //Set Up server
@@ -1996,131 +1534,36 @@ void gameSettings() {
 }
 
 
-
-int visualX[] = {0, 0, 0, 0, 0};
-boolean hasSeenSign = false;
-void parallax() {
-  if (!CreitsTheme.isPlaying()) {
-    MainTheme.stop();
-    CreitsTheme.play();
-  }
-
-  for (int i = 0; i < 200; i++) {
-    if (i == 0) {
-      visualX[i]-=getSpeedPerFrame(10/5);
-    } else if (i == 1) {
-      visualX[i]-=getSpeedPerFrame(10/4);
-    } else if (i == 2) {
-      visualX[i]-=getSpeedPerFrame(10/3);
-    } else if (i == 3) {
-      visualX[i]-=getSpeedPerFrame(10/2);
-    } else if (i == 4) {
-      visualX[i]-=getSpeedPerFrame(10);
-      if (visualX[i] < -width*2) {
-        hasSeenSign = true;
-      }
-      print(visualX[i]+"\n");
-    }
-
-    //float BackgroundWidth =  width*((sqrt(b1.width)/10)/4);
-    //float BackgroundHeight = height*((sqrt(b1.height)/10)/3);
-    float BackgroundWidth =  b1.width;
-    float BackgroundHeight = b1.height;
-    while (BackgroundWidth < width) {
-      if (BackgroundWidth < width || BackgroundHeight < height) {
-
-        BackgroundWidth = BackgroundWidth * 2;
-        BackgroundHeight = BackgroundHeight * 2;
-      }
-    }
-
-
-
-
-
-    image(b1, (visualX[0]/*/5*/)+BackgroundWidth*i, 0, BackgroundWidth, BackgroundHeight);
-    image(b2, (visualX[1])+BackgroundWidth*i, 0, BackgroundWidth, BackgroundHeight);
-    image(b3, (visualX[2])+BackgroundWidth*i, 0, BackgroundWidth, BackgroundHeight);
-    image(b4, (visualX[3])+BackgroundWidth*i, 0, BackgroundWidth, BackgroundHeight);
-    if (hasSeenSign == false) {
-      image(b5, (visualX[4])+BackgroundWidth*i, 0, BackgroundWidth, BackgroundHeight);
-    }
-  }
-}
-
-int frameRatePos;
-boolean resizingGraph = false;
-void graph() {
-  fps.addPoint(frameRatePos, frameRate); 
-  if (keyPressed) {
-    if (key == 's') {
-      openGraph = true;
-    } else if (key == 'h') {
-      openGraph = false;
-    }
-  }
-
-  if (openGraph) {
-
-    if (millis() % 2 == 0) {
-
-      frameRatePos ++;
-    }
-
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    // Draw Plot
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    if (resizingGraph) {
-      fps.setDim(mouseX, mouseY);
-    }
-    if (keyPressed && key == 'r') {
-
-      resizingGraph = true;
-    } else {
-      resizingGraph = false;
-    }
-
-
-
-
-    fps.beginDraw();
-    fps.drawBackground();
-    fps.drawBox();
-    fps.drawXAxis();
-    fps.drawYAxis();
-    fps.drawTitle();
-    fps.drawGridLines(GPlot.BOTH);
-    fps.drawPoints();
-    fps.endDraw();
-  }
-}
-
 void debug() {
   fill(0);
   text("FPS: "+ frameRate, 20, height-20);
 }
-
-void Shake(int Amt) {
-  ShakeLimits = Amt;
-}
-void UpdateShake() {
-  translate(random(-ShakeLimits, ShakeLimits), random(-ShakeLimits, ShakeLimits));
-  if (ShakeLimits > 0) {
-    ShakeLimits --;
-  }
-}
 void draw() {
-  clear();
 
-  UpdateShake();
+  if (settingsOpen || paused) {
+    if (paused) {
+      fill(20, 20, 20, 20);
+      rect(-1, -1, width+2, height+2);
 
-
-  if (DispMenu.equals("Playing")) {
+      if (inArea(mouseX, mouseY, (width/2)-60, (height/2)+80, 120, 50)) {
+        fill(25, 25, 25, 100);
+        if (mouseLifted()) {
+          settingsOpen = true;
+          paused = false;
+        }
+      } else {
+        fill(0, 0, 0, 150);
+      }
+      rect((width/2)-60, (height/2)+80, 120, 50);
+    } else if (settingsOpen) {
+      gameSettings();
+    }
+  } else {
+    clear();
     background(SkyColor);
-
     global_time += getSpeedPerFrame(timeSpeed);
     loadMap(round(PlayerX), round(PlayerY), BlockSize, BlockSize);
-
+    debug();
     OldPlayerX = round(PlayerX);
     OldPlayerY = round(PlayerY);
 
@@ -2142,132 +1585,8 @@ void draw() {
     //G1.displayGard();
 
     GUI();
-    pauseButton();
-
-
-
-    if (!MainTheme.isPlaying()) {
-      MainTheme.play();
-    }
-  } else if (DispMenu.equals("MainMenu")) {
-    background(SkyColor);
-    loadMap(round(PlayerX), round(PlayerY), BlockSize, BlockSize);
-    fill(0, 0, 0, 100);
-    rect(-1, -1, width+2, height+2);
-    noStroke();
-    if (inArea(mouseX, mouseY, width/2-(150/2), height/2-30, 150, 60)) {
-      fill(0, 0, 0, 200);
-      if (mouseLifted()) {
-        DispMenu = "TeamSelect";
-      }
-    } else {
-      fill(0, 0, 0, 100);
-    }
-    rect(width/2-(150/2), height/2-30, 150, 60);
-
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(40);
-    text("Play", width/2-(150/2), height/2-30, 150, 60);
-
-    //Credits Button
-
-    if (inArea(mouseX, mouseY, width/2-(150/2), height/2+50, 150, 60)) {
-      fill(0, 0, 0, 200);
-      if (mouseLifted()) {
-        DispMenu = "Credits";
-      }
-    } else {
-      fill(0, 0, 0, 100);
-    }
-    rect(width/2-(150/2), height/2+50, 150, 60);
-
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(40);
-    text("Credits", width/2-(150/2), height/2+50, 150, 60);
-
-
-    textAlign(TOP, LEFT);
-    textSize(12);
-  } else if (DispMenu.equals("TeamSelect")) {
-
-
-    background(SkyColor);
-    loadMap(round(PlayerX), round(PlayerY), BlockSize, BlockSize);
-
-    noStroke();
-    if (inArea(mouseX, mouseY, 0, 0, width/2, height)) {
-      fill(0, 0, 0, 200);
-      if (mouseLifted()) {
-        //
-        DispMenu = "Playing";
-        Team = "Naruto Runner";
-        MaxPlayerSpeed = 12;
-      }
-    } else {
-      fill(0, 0, 0, 100);
-    }
-
-    //Left rectangle
-    rect(0, 0, width/2, height);
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(40);
-    text("Naruto Runner", 0, 0, width/2, height);
-    //Right Rect
-    if (inArea(mouseX, mouseY, width/2, 0, width/2, height)) {
-      fill(0, 0, 0, 200);
-      if (mouseLifted()) {
-        DispMenu = "Playing";
-        Team = "Nomad";
-      }
-    } else {
-      fill(0, 0, 0, 100);
-    }
-    rect(width/2, 0, width/2, height);
-
-
-    fill(255);
-    text("Nomad", width/2, 0, width/2, height);
-
-    textAlign(TOP, LEFT);
-  } else if (DispMenu.equals("Credits")) {
-    //TODO bit image files lag
-    //Paralax Credits
-    if (loadingCreditsFiles) {
-      CreitsTheme = new SoundFile(this, "Credits_Theme.mp3");
-      b1 = loadImage("/Paralax_Files/Sky.png");
-      b2 = loadImage("/Paralax_Files/ufo.png");
-      b3 = loadImage("/Paralax_Files/mountains.png");
-      b4 = loadImage("/Paralax_Files/grassyHills.png");
-      b5 = loadImage("/Paralax_Files/sign.png");
-      loadingCreditsFiles = false;
-    }
-
-    parallax();
-  } else if (settingsOpen || paused) {
-    if (paused) {
-      fill(20, 20, 20, 20);
-      rect(-1, -1, width+2, height+2);
-
-      if (inArea(mouseX, mouseY, (width/2)-60, (height/2)+80, 120, 50)) {
-        fill(255, 255, 255, 100);
-        if (mouseLifted()) {
-          settingsOpen = true;
-          paused = false;
-        }
-      } else {
-        fill(255, 255, 255, 150);
-      }
-      rect((width/2)-60, (height/2)+80, 120, 50);
-    } else if (settingsOpen) {
-      gameSettings();
-    }
-    pauseButton();
-  } 
-
-
+  }
+  pauseButton();
 
 
 
@@ -2286,9 +1605,55 @@ void draw() {
       isBuilding = false;
     }
   }
-  graph();
-  debug();
+  if (!MainTheme.isPlaying()) {
+    MainTheme.play();
+  }
+  if (ServerStarted) {
+    if (Connected) {
 
 
-  multiplayer();
+      if (mousePressed) {
+        pressingMouse = 1;
+      } else {
+        pressingMouse = 0;
+      }
+      if (walking || mousePressed) {
+        s.write(round((-PlayerX)+PlayerOffsetX) + " " + round((-PlayerY)+PlayerOffsetY) + " " + MouseXOnGrid + " " + MouseYOnGrid + " " + pressingMouse + "\n");
+      }
+
+      // Receive data from client
+      c = s.available();
+      if (c != null) {
+        input = c.readString(); 
+        input = input.substring(0, input.indexOf("\n"));  // Only up to the newline
+        data = int(split(input, ' '));  // Split values into an array
+
+
+        Player2X = abs(round(int(data[0])));
+        Player2Y = abs(round(int(data[1])));
+        try {
+          if (data[4] == 1) {
+            doMapInteractions(data[2], data[3]);
+          }//inArea(data[3], data[4], (i*Width)+X, (j*Height)+Y, Width, Width)
+        }
+        catch(Exception e) {
+        }
+        //print("Received: "+data[0]+"  "+data[1]+"\n");
+      }
+    } else {
+      //Server
+      try {
+
+
+        Connected = true;
+      }
+      catch(Exception e) {
+        print(e);
+        //Connected = false;
+      }
+    }
+    //ellipse(Player2X + PlayerX, Player2Y + PlayerY, 100, 100);
+
+    image(loadImg(player, 0, 30, 16, 16, false), Player2X + PlayerX, Player2Y + PlayerY, PlayerWidth, PlayerHeight);
+  }
 }
